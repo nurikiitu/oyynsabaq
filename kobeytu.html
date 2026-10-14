@@ -498,7 +498,9 @@ run(st,id){
 const chips=$('#chips');
 [0,2,3,4,5,6,7,8,9].forEach(n=>{const c=el('button','chip'+(n===SEL?' on':''),n?'× '+n:'🎲 Аралас');c.onclick=()=>{SEL=n;try{localStorage.setItem('kb_sel',n)}catch(e){}chips.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');beep('tap')};chips.append(c)});
 ['⚡ Жылдамдық ойындары','👥 Бүкіл сыныппен','🧠 Ойлан, тап'].forEach((g,gi)=>{const s=el('div','sec',`<h2>${g}</h2>`),cs=el('div','cards');s.append(cs);$('#groups').append(s);
-  GAMES.filter(x=>x.grp===gi).forEach(x=>{const c=el('button','card',`<div class="ic">${x.icon}</div><div><div class="t">${x.title}</div><div class="s">${x.sub}</div></div>`);c.style.setProperty('--c1',x.c1);c.style.setProperty('--c2',x.c2);c.onclick=()=>{beep('tap');start(x)};cs.append(c)})});
+  GAMES.filter(x=>x.grp===gi).forEach(x=>{const c=el('button','card',`<div class="ic">${x.icon}</div><div><div class="t">${x.title}</div><div class="s">${x.sub}</div></div>`);c.style.setProperty('--c1',x.c1);c.style.setProperty('--c2',x.c2);c.dataset.id=x.id;c.onclick=()=>{beep('tap');start(x)};cs.append(c)})});
+window.OS_filter=c=>{const a=c.allow&&c.allow[3];if(!a)return;document.querySelectorAll('.card[data-id]').forEach(e=>{if(!a.includes(e.dataset.id))e.remove()});
+  document.querySelectorAll('#groups .sec').forEach(s=>{if(!s.querySelector('.card'))s.remove()})};
 </script>
 </body>
 </html>

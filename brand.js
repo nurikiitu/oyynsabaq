@@ -20,5 +20,5 @@ window.OS={sha,centers,valid,apply,logoHTML,
   logout(){try{localStorage.removeItem(KEY)}catch(e){}location.href='index.html'},
   async current(){let h=null;try{h=localStorage.getItem(KEY)}catch(e){}if(!h)return null;const c=(await centers()).find(x=>x.hash===h);return valid(c)?c:null}};
 if(!isLogin)window.OS.current().then(c=>{if(!c){location.replace('index.html?out=1');return}window.OS.center=c;
-  const go=()=>{apply(c);document.documentElement.style.visibility=''};document.readyState==='loading'?document.addEventListener('DOMContentLoaded',go):go()});
+  const go=()=>{apply(c);try{window.OS_filter&&window.OS_filter(c)}catch(e){console.error(e)}document.documentElement.style.visibility=''};document.readyState==='loading'?document.addEventListener('DOMContentLoaded',go):go()});
 })();

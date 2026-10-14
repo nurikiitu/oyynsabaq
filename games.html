@@ -267,7 +267,7 @@ button{font-family:inherit;cursor:pointer;border:none;touch-action:manipulation;
  .webox{padding:18px}.webox h3{font-size:26px}.webox p{font-size:15px}.webox textarea{font-size:22px;height:200px}
 }
 </style>
-<style>body{background:linear-gradient(160deg,var(--b1,#29a3f5),var(--b2,#1565c0))}@media(max-width:700px){.home-head{padding-top:62px}}</style>
+<style>body{background:linear-gradient(160deg,var(--b1,#29a3f5),var(--b2,#1565c0))}@media(max-width:700px){.home-head{padding-top:62px}}.demo-note{max-width:1100px;margin:6px auto 0;background:#fff;color:#1a2a5a;border-radius:18px;padding:10px 18px;font-weight:900;font-size:clamp(15px,1.6vw,20px);text-align:center;box-shadow:0 5px 0 rgba(0,0,0,.15)}.demo-note a{color:#43a047;white-space:nowrap}</style>
 </head>
 <body>
 
@@ -741,7 +741,7 @@ let curGrade=null;
 function showGrades(){curGrade=null;$('#grades').style.display='';$('#gradebar').style.display='none';$('#grid').innerHTML=''}
 function openGrade(n){curGrade=n;$('#grades').style.display='none';$('#gradebar').style.display='flex';$('#gname').textContent=n+'-СЫНЫП';
   const grid=$('#grid');grid.innerHTML='';const list=GAMES.filter(g=>g.grade===n);
-  if(n===3){const c=el('a','gcard',`<div class="ic" style="background:#d1c4e9">🚀</div><div class="t">Көбейту әлемі</div><div class="s">8 ойын: көбейту мен бөлу</div>`);c.href='kobeytu.html';c.style.textDecoration='none';c.style.color='inherit';grid.append(c)}
+  if(n===3){const c=el('a','gcard',`<div class="ic" style="background:#d1c4e9">🚀</div><div class="t">Көбейту әлемі</div><div class="s">${window.KB_N||8} ойын: көбейту мен бөлу</div>`);c.href='kobeytu.html';c.style.textDecoration='none';c.style.color='inherit';grid.append(c)}
   else if(!list.length)grid.append(el('div','soon','🛠 Жақында ойындар қосылады!'));
   list.forEach(g=>{const c=el('button','gcard',`<div class="ic" style="background:${g.bg}">${g.icon}</div><div class="t">${g.title}</div><div class="s">${g.sub}</div>`);c.onclick=()=>{beep('tap');startGame(g)};grid.append(c)})}
 GRADES.forEach(G=>{const k=GAMES.filter(g=>g.grade===G.n).length;
@@ -750,6 +750,12 @@ GRADES.forEach(G=>{const k=GAMES.filter(g=>g.grade===G.n).length;
 /* жеке сілтеме: ?s=1 немесе /1/ — тек сол сынып ашылады */
 const LOCK=(()=>{const q=new URLSearchParams(location.search).get('s')||location.hash.replace('#','');const n=+q;return GRADES.some(g=>g.n===n)?n:null})();
 if(LOCK){openGrade(LOCK);$('#gradebar button').style.visibility='hidden';window.showGrades=()=>openGrade(LOCK)}
+/* платформа: орталыққа рұқсат етілген ойындар */
+window.OS_filter=c=>{if(c.demo){const d=el('div','demo-note',`🎁 Демо-нұсқа: әр сыныпта 1–2 ойын. Толық нұсқада — 25-тен астам ойын! <a href="https://wa.me/77471091600" target="_blank">WhatsApp: 8 747 109 16 00</a>`);document.querySelector('.home-head').after(d)}
+  const a=c.allow;if(!a)return;for(let i=GAMES.length-1;i>=0;i--){const g=GAMES[i];if(a[g.grade]&&!a[g.grade].includes(g.id))GAMES.splice(i,1)}
+  if(a[3])window.KB_N=a[3].length;
+  document.querySelectorAll('#grades .gradecard .gc').forEach((e,i)=>{const n=GRADES[i].n,k=n===3?(window.KB_N||8):GAMES.filter(g=>g.grade===n).length;e.textContent=k?k+' ойын':'жақында'});
+  if(curGrade)openGrade(curGrade)};
 </script>
 </body>
 </html>
