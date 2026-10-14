@@ -191,15 +191,6 @@ button{font-family:inherit;border:none;cursor:pointer;color:inherit;touch-action
 .sq{font-size:clamp(24px,3vw,42px);font-weight:900;text-align:center;max-width:1100px;line-height:1.25}
 .opt.txt{font-size:clamp(22px,2.6vw,38px);padding:0 26px}
 
-.shcard{background:#fff;color:var(--ink);border-radius:30px;padding:14px 40px;display:flex;flex-direction:column;align-items:center;box-shadow:0 8px 0 #9d8fd6;touch-action:none;cursor:grab;transition:transform .05s}
-.shcard span{font-size:clamp(80px,10vw,140px);line-height:1.1}.shcard small{font-size:clamp(22px,2.6vw,34px);font-weight:900}
-.shbins{display:flex;gap:clamp(10px,2vw,28px);justify-content:center;width:100%;max-width:1200px}
-.shbin{flex:1;max-width:360px;background:rgba(255,255,255,.12);border:4px dashed rgba(255,255,255,.5);border-radius:28px;padding:14px 8px;display:flex;flex-direction:column;align-items:center;gap:8px;color:#fff}
-.shbin b{font-size:clamp(20px,2.4vw,32px)}
-.shbin.over{background:rgba(255,210,63,.35);border-color:#ffd23f;border-style:solid}
-.shp{width:clamp(70px,8vw,120px);height:clamp(70px,8vw,120px);background:var(--c);box-shadow:0 6px 0 rgba(0,0,0,.25)}
-.shp.c{border-radius:50%}.shp.s{border-radius:10px}.shp.t{clip-path:polygon(50% 4%,98% 96%,2% 96%);box-shadow:none}
-.shin{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;font-size:clamp(26px,3vw,40px);min-height:44px}
 /* final */
 #final{position:fixed;inset:0;background:rgba(10,6,40,.7);display:none;align-items:center;justify-content:center;z-index:20;padding:16px}
 #final.on{display:flex}
@@ -227,7 +218,6 @@ button{font-family:inherit;border:none;cursor:pointer;color:inherit;touch-action
  .mgrid{grid-template-columns:repeat(3,1fr)}
  .cell{border-radius:12px}
  .fb{padding:24px 18px}
- .shbins{gap:6px}.shbin{padding:8px 2px;border-width:3px}.shbin b{font-size:15px}.shcard{padding:10px 26px}
  .qbox{white-space:nowrap;font-size:30px;padding:4px 14px}.pill{font-size:16px;padding:6px 10px}
  .life{flex-wrap:wrap;justify-content:center;gap:6px}.life .btn{font-size:14px;padding:8px 10px}
 }
@@ -501,29 +491,6 @@ run(st,id){
     options(op,t.opts,t.ans,()=>{i++;if(i>=N)return setTimeout(()=>finish(id,true,'Сен нағыз сатып алушысың! 🛒💰'),700);setTimeout(()=>alive(id)&&draw(),800)},
       ()=>{if(t.txt)setTimeout(()=>{if(!alive(id))return;flash(`${t.n} × ${t.it[2]} = ${t.n*t.it[2]} ₸`)},200)});
     if(!t.txt)op.querySelectorAll('.opt').forEach(b=>b.textContent+=' ₸');else op.querySelectorAll('.opt').forEach(b=>b.classList.add('txt'))};
-  draw()})}},
-/* 10. Shapes sorting */
-{id:'shp',grp:2,icon:'🔷',title:'Пішініне қарай топтастыр',sub:'Затты дұрыс пішінге апар',c1:'#00c9a7',c2:'#3fa9ff',
-run(st,id){
-  const SH={c:['Шеңбер','#ff4d8d'],s:['Төртбұрыш','#3fa9ff'],t:['Үшбұрыш','#ff9f1a']};
-  const IT={c:[['⚽','доп'],['🏀','доп'],['🕐','сағат'],['🍪','печенье'],['🍩','пончик'],['🪙','тиын'],['🌕','ай'],['🍊','апельсин'],['🎯','нысана'],['🔘','түйме']],
-    s:[['📱','телефон'],['📘','кітап'],['🖼️','сурет'],['🚪','есік'],['🧱','кірпіш'],['🎁','сыйлық'],['✉️','хат'],['📦','қорап'],['🍫','шоколад'],['📅','күнтізбе']],
-    t:[['⛺','шатыр'],['🍕','пицца'],['🎄','шырша'],['⚠️','белгі'],['📐','сызғыш'],['🧀','ірімшік'],['🏔️','тау']]};
-  startScreen(st,'🔷 Пішініне қарай топтастыр','Заттарды пішініне қарай топтастыр: доп — шеңберге, кітап — төртбұрышқа, шатыр — үшбұрышқа.<br>Затты ұстап, төмендегі пішінге апар немесе пішінді бас.',null,()=>{
-  st.innerHTML='';const items=shuffle(Object.keys(IT).flatMap(k=>pick(IT[k],4).map(x=>({e:x[0],n:x[1],k}))));let i=0,err=0;
-  const dots=el('div','dots'),card=el('div','shcard'),bins=el('div','shbins');st.append(dots,el('div','title','Бұл зат қандай пішінге ұқсайды?'),card,bins);
-  const B={};Object.entries(SH).forEach(([k,[name,col]])=>{const b=el('button','shbin',`<div class="shp ${k}" style="--c:${col}"></div><b>${name}</b><div class="shin"></div>`);b.dataset.k=k;b.onclick=()=>put(k);B[k]=b;bins.append(b)});
-  const draw=()=>{dots.innerHTML='';items.forEach((_,j)=>dots.append(el('i',j<i?'d':j===i?'c':'')));const it=items[i];card.innerHTML=`<span>${it.e}</span><small>${it.n}</small>`;card.style.transform='';reanim(card,'pop')};
-  function put(k){if(!alive(id)||i>=items.length)return;const it=items[i];
-    if(k===it.k){beep('ok');B[k].querySelector('.shin').append(el('span','pop',it.e));i++;if(i>=items.length)return setTimeout(()=>finish(id,true,err?`Қате: ${err}. Тағы жаттығайық! 🔷`:'Бірде-бір қатесіз! 🏆'),500);draw()}
-    else{beep('bad');err++;reanim(B[k],'shake');flash(`${it.n} — ${SH[it.k][0].toLowerCase()}`)}}
-  /* drag the card */
-  card.addEventListener('pointerdown',e=>{e.preventDefault();const sx=e.clientX,sy=e.clientY;let over=null;try{card.setPointerCapture(e.pointerId)}catch(_){}
-    const tgt=ev=>{card.style.visibility='hidden';const t=document.elementFromPoint(ev.clientX,ev.clientY);card.style.visibility='';return t&&t.closest('.shbin')};
-    const mv=ev=>{card.style.transform=`translate(${ev.clientX-sx}px,${ev.clientY-sy}px) scale(.85)`;const t=tgt(ev);if(t!==over){over&&over.classList.remove('over');over=t;over&&over.classList.add('over')}};
-    const up=ev=>{card.removeEventListener('pointermove',mv);card.removeEventListener('pointerup',up);card.removeEventListener('pointercancel',up);over&&over.classList.remove('over');
-      const t=Math.hypot(ev.clientX-sx,ev.clientY-sy)>12?tgt(ev):null;card.style.transform='';if(t)put(t.dataset.k)};
-    card.addEventListener('pointermove',mv);card.addEventListener('pointerup',up);card.addEventListener('pointercancel',up)});
   draw()})}},
 ];
 
