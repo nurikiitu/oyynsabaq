@@ -13,7 +13,7 @@ g=open(src_games,encoding='utf-8').read()
 g=rep(g,'<title>neuroUstaz · Ойындар</title>','<title>Ойындар</title>\n<script src="brand.js"></script>','games')
 g=rep(g,'</head>',BG+'\n</head>','games')
 g=rep(g,'<h1>🧠 neuroUstaz</h1>','<h1><span data-brand-logo></span> <span data-brand-name></span></h1>','games')
-g=rep(g,'<p>Ойнап үйренеміз!</p>','<p data-brand-slogan></p>\n    <button class="tbtn" style="position:absolute;left:24px;top:24px" onclick="OS.logout()">🚪 Шығу</button>','games')
+g=rep(g,'<p>Ойнап үйренеміз!</p>','<p data-brand-slogan></p>\n    <button class="tbtn" style="position:absolute;left:24px;top:24px;z-index:10" onclick="OS.logout()">🚪 Шығу</button>','games')
 g=rep(g,"c.href='https://nurikiitu.github.io/kobeytu-alemi/'","c.href='kobeytu.html'",'games')
 g=rep(g,"<div class=\"s\">8 ойын: көбейту мен бөлу</div>","<div class=\"s\">${window.KB_N||8} ойын: көбейту мен бөлу</div>",'games')
 FILTER_G="""
