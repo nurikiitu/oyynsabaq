@@ -15,13 +15,13 @@ g=rep(g,'</head>',BG+'\n</head>','games')
 g=rep(g,'<h1>🧠 neuroUstaz</h1>','<h1><span data-brand-logo></span> <span data-brand-name></span></h1>','games')
 g=rep(g,'<p>Ойнап үйренеміз!</p>','<p data-brand-slogan></p>\n    <button class="tbtn" style="position:absolute;left:24px;top:24px;z-index:10" onclick="OS.logout()">🚪 Шығу</button>','games')
 g=rep(g,"c.href='https://nurikiitu.github.io/kobeytu-alemi/'","c.href='kobeytu.html'",'games')
-g=rep(g,"<div class=\"s\">8 ойын: көбейту мен бөлу</div>","<div class=\"s\">${window.KB_N||8} ойын: көбейту мен бөлу</div>",'games')
+g=rep(g,"<div class=\"s\">9 ойын: көбейту мен бөлу</div>","<div class=\"s\">${window.KB_N||9} ойын: көбейту мен бөлу</div>",'games')
 FILTER_G="""
 /* платформа: орталыққа рұқсат етілген ойындар */
 window.OS_filter=c=>{if(c.demo){const d=el('div','demo-note',`🎁 Демо-нұсқа: әр сыныпта 1–2 ойын. Толық нұсқада — 25-тен астам ойын! <a href="https://wa.me/77471091600" target="_blank">WhatsApp: 8 747 109 16 00</a>`);document.querySelector('.home-head').after(d)}
   const a=c.allow;if(!a)return;for(let i=GAMES.length-1;i>=0;i--){const g=GAMES[i];if(a[g.grade]&&!a[g.grade].includes(g.id))GAMES.splice(i,1)}
   if(a[3])window.KB_N=a[3].length;
-  document.querySelectorAll('#grades .gradecard .gc').forEach((e,i)=>{const n=GRADES[i].n,k=n===3?(window.KB_N||8):GAMES.filter(g=>g.grade===n).length;e.textContent=k?k+' ойын':'жақында'});
+  document.querySelectorAll('#grades .gradecard .gc').forEach((e,i)=>{const n=GRADES[i].n,k=n===3?(window.KB_N||9):GAMES.filter(g=>g.grade===n).length;e.textContent=k?k+' ойын':'жақында'});
   if(curGrade)openGrade(curGrade)};
 """
 g=rep(g,"\n</script>\n</body>",FILTER_G+"</script>\n</body>",'games')
