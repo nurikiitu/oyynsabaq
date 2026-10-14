@@ -1,0 +1,30 @@
+[
+ {
+  "id": "demo",
+  "name": "ОйынСабақ",
+  "slogan": "Ойнап үйренеміз!",
+  "logo": "🎲",
+  "c1": "#29a3f5",
+  "c2": "#1565c0",
+  "until": "2026-12-31",
+  "demo": true,
+  "hash": "368018daacd55f49c47fd837239c87ed0faff34e77ab2a7ba9cbfbe089ecd092"
+ },
+ {
+  "id": "neuroustaz",
+  "name": "neuroUstaz",
+  "slogan": "Ойнап үйренеміз!",
+  "logo": "🧠",
+  "c1": "#29a3f5",
+  "c2": "#1565c0",
+  "until": "2027-12-31",
+  "hash": "fcebb9e20fe00bb43748ca69f6565bdf4e65bb467425fa7650513ff1c3ef7698"
+ },
+ {
+  "id": "test",
+  "name": "Мерзімі өткен (тест)",
+  "logo": "⏳",
+  "until": "2026-01-01",
+  "hash": "09526841ac55c465fd36a76fc75e136b3e5b757142a2da7edc83c334ffacb86c"
+ }
+]

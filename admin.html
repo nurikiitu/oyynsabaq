@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="kk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ОйынСабақ · жаңа орталық</title>
+<script src="brand.js" data-login="1"></script>
+<style>body{font:16px system-ui,sans-serif;max-width:720px;margin:30px auto;padding:0 16px;color:#1a2a5a}label{display:block;margin-top:12px;font-weight:700}input{width:100%;padding:10px;font-size:16px;border:2px solid #c5d4ee;border-radius:10px}
+button{margin-top:16px;padding:12px 20px;font-size:17px;font-weight:700;border:none;border-radius:10px;background:#1e88e5;color:#fff;cursor:pointer}pre{background:#f1f6ff;padding:14px;border-radius:10px;white-space:pre-wrap;word-break:break-all}</style></head>
+<body><h2>Жаңа орталық қосу</h2><p>Толтырыңыз → «Жасау» → шыққан жолды <b>centers.json</b> ішіне қосыңыз.</p>
+<label>ID (латынша, бос орынсыз)<input id="id" placeholder="bilim-astana"></label>
+<label>Орталық атауы<input id="name" placeholder="Білім орталығы"></label>
+<label>Ұран<input id="slogan" value="Ойнап үйренеміз!"></label>
+<label>Логотип (эмодзи немесе logos/файл.png)<input id="logo" value="⭐"></label>
+<label>Түс 1 / Түс 2<input id="c1" type="color" value="#29a3f5" style="height:44px"><input id="c2" type="color" value="#1565c0" style="height:44px"></label>
+<label>Мерзімі (қай күнге дейін)<input id="until" type="date"></label>
+<label>Кіру коды<input id="code" placeholder="BILIM-2481"></label>
+<button onclick="mk()">Жасау</button><pre id="out"></pre>
+<script>async function mk(){const g=i=>document.getElementById(i).value.trim();if(!g('code'))return alert('Код жазыңыз');
+const o={id:g('id'),name:g('name'),slogan:g('slogan'),logo:g('logo'),c1:g('c1'),c2:g('c2'),until:g('until'),hash:await OS.sha(g('code'))};
+document.getElementById('out').textContent=JSON.stringify(o)+',\n\nКод: '+g('code').toUpperCase()}</script></body></html>

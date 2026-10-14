@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ОйынСабақ — оқу орталықтарына арналған ойындар</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<script src="brand.js" data-login="1"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Nunito,system-ui,sans-serif;min-height:100vh;color:#1a2a5a;background:linear-gradient(160deg,#29a3f5,#1565c0);display:flex;align-items:center;justify-content:center;padding:20px}
+.box{background:#fff;border-radius:34px;padding:40px 44px;width:min(560px,100%);text-align:center;box-shadow:0 14px 0 rgba(0,0,0,.18)}
+.logo{font-size:76px;line-height:1}
+h1{font-size:clamp(36px,6vw,54px);font-weight:900;margin:6px 0 2px;background:linear-gradient(90deg,#e53935,#fb8c00,#43a047,#1e88e5);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{font-weight:800;opacity:.7;font-size:18px;margin-bottom:26px}
+label{display:block;font-weight:900;font-size:18px;margin-bottom:8px;text-align:left}
+input{width:100%;font:900 30px Nunito,sans-serif;text-align:center;letter-spacing:3px;text-transform:uppercase;padding:14px;border:4px solid #c5d4ee;border-radius:20px;outline:none;color:#1a2a5a}
+input:focus{border-color:#1e88e5}
+button{margin-top:16px;width:100%;font:900 26px Nunito,sans-serif;color:#fff;background:#43a047;border:none;border-radius:20px;padding:16px;cursor:pointer;box-shadow:0 7px 0 #2e7d32}
+button:active{transform:translateY(5px);box-shadow:0 2px 0 #2e7d32}
+button:disabled{opacity:.6}
+.err{color:#e53935;font-weight:900;font-size:18px;min-height:26px;margin-top:12px}
+.feat{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:26px;text-align:left}
+.feat div{background:#f1f6ff;border-radius:16px;padding:10px 12px;font-weight:800;font-size:15px}
+.foot{margin-top:20px;font-weight:800;font-size:14px;opacity:.6}
+@media(max-width:480px){.box{padding:28px 20px}.feat{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="logo">🎲</div>
+  <h1>ОйынСабақ</h1>
+  <div class="sub">1–4 сынып · интерактивті тақтаға арналған ойындар</div>
+  <form id="f">
+    <label for="code">Орталықтың кіру коды</label>
+    <input id="code" autocomplete="off" spellcheck="false" placeholder="КОД">
+    <button id="go">Кіру ➜</button>
+    <div class="err" id="err"></div>
+  </form>
+  <div class="feat">
+    <div>🧮 Математика: сан құрамы, теңдеу, көбейту</div>
+    <div>📖 Оқу, дыбыстар, әріптер</div>
+    <div>👥 Бүкіл сыныппен жарыстар</div>
+    <div>📱 Тақтада да, телефонда да</div>
+  </div>
+  <div class="foot">Код жоқ па? <a href="https://wa.me/77478180182" style="color:#1e88e5">WhatsApp: +7 747 818 0182</a></div>
+</div>
+<script>
+const f=document.getElementById('f'),inp=document.getElementById('code'),err=document.getElementById('err'),go=document.getElementById('go');
+async function tryCode(code){go.disabled=true;err.textContent='';const r=await OS.login(code);go.disabled=false;
+  if(r.err){err.textContent=r.err;inp.select();return}location.href='games.html'}
+f.onsubmit=e=>{e.preventDefault();if(inp.value.trim())tryCode(inp.value)};
+(async()=>{const q=new URLSearchParams(location.search);
+  if(q.get('out'))err.textContent='Кіру үшін орталық кодын енгізіңіз.';
+  if(q.get('code')){inp.value=q.get('code');return tryCode(q.get('code'))}
+  if(await OS.current())location.replace('games.html');else inp.focus()})();
+</script>
+</body>
+</html>
