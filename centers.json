@@ -38,6 +38,16 @@
   "hash": "fcebb9e20fe00bb43748ca69f6565bdf4e65bb467425fa7650513ff1c3ef7698"
  },
  {
+  "id": "nurdaulet",
+  "name": "neuroUstaz",
+  "slogan": "Ойнап үйренеміз!",
+  "logo": "🧠",
+  "c1": "#29a3f5",
+  "c2": "#1565c0",
+  "until": "2027-12-31",
+  "hash": "7975ce803ecda2774744c6d1872f38adf6ccc73378b16cb8a3846ffc01377080"
+ },
+ {
   "id": "test",
   "name": "Мерзімі өткен (тест)",
   "logo": "⏳",
