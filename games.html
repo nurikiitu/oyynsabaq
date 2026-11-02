@@ -736,6 +736,11 @@ function restart(){startGame(S.game)}
 function goHome(){token++;stopConfetti();$('#final').classList.remove('show');show('home');if(S.game&&S.game.grade)openGrade(S.game.grade)}
 function toggleFS(){if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()}
 
+/* бөлек беттегі ойындар: карточка басылғанда сол бетке өтеді */
+GAMES.push(
+ {id:'kuzsoz',grade:2,title:'Күзгі сөздер',icon:'🍂',bg:'#ffe0b2',sub:'М. Дулатұлы «Күз»: қаптап, сіркіреп, қурау, астық',href:'kuzgi-sozder.html'},
+ {id:'gylym',grade:2,title:'Ғылым кілті',icon:'🗝️',bg:'#fff3c4',sub:'Абай «Ғылымға көңіл бөлсеңіз»: 10 ұяшық, 10 сұрақ',href:'gylym-kilti.html'});
+
 /* home: сыныптар */
 const GRADES=[{n:1,c:'#ef5350'},{n:2,c:'#ffa726'},{n:3,c:'#66bb6a'},{n:4,c:'#ab47bc'}];
 let curGrade=null;
@@ -745,7 +750,7 @@ function openGrade(n){curGrade=n;$('#grades').style.display='none';$('#gradebar'
   if(n===3){const c=el('a','gcard',`<div class="ic" style="background:#d1c4e9">🚀</div><div class="t">Көбейту әлемі</div><div class="s">${window.KB_N||8} ойын: көбейту мен бөлу</div>`);c.href='kobeytu.html';c.style.textDecoration='none';c.style.color='inherit';grid.append(c)}
   else if(n===4&&!window.OS){const c=el('a','gcard',`<div class="ic" style="background:#b2ebf2">🏝️</div><div class="t">Білім аралы</div><div class="s">12 ойын: математика мен қазақ тілі, 3 деңгей</div>`);c.href='bilim/';c.style.textDecoration='none';c.style.color='inherit';grid.append(c)}
   else if(!list.length)grid.append(el('div','soon','🛠 Жақында ойындар қосылады!'));
-  list.forEach(g=>{const c=el('button','gcard',`<div class="ic" style="background:${g.bg}">${g.icon}</div><div class="t">${g.title}</div><div class="s">${g.sub}</div>`);c.onclick=()=>{beep('tap');startGame(g)};grid.append(c)})}
+  list.forEach(g=>{const c=el('button','gcard',`<div class="ic" style="background:${g.bg}">${g.icon}</div><div class="t">${g.title}</div><div class="s">${g.sub}</div>`);c.onclick=()=>{beep('tap');if(g.href)location.href=g.href;else startGame(g)};grid.append(c)})}
 GRADES.forEach(G=>{const k=GAMES.filter(g=>g.grade===G.n).length;
   const b=el('button','gradecard',`<div class="gn">${G.n}</div><div class="gt">СЫНЫП</div><div class="gc">${G.n===3?'8 ойын':G.n===4&&!window.OS?(k+12)+' ойын':k?k+' ойын':'жақында'}</div>`);
   b.style.background=G.c;b.onclick=()=>{beep('tap');openGrade(G.n)};$('#grades').append(b)});

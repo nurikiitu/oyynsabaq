@@ -4,6 +4,7 @@
 
 - `index.html` — кіру (орталық коды). Демо сілтеме: `?code=DEMO`
 - `games.html` — 1, 2, 4-сынып ойындары; `kobeytu.html` — 3-сынып
+- `kuzgi-sozder.html`, `gylym-kilti.html` — 2-сыныптың бөлек беттегі ойындары; тізімге `tools/extra.py` арқылы қосылады
 - `centers.json` — орталықтар тізімі: атауы, логотипі, түстері, мерзімі (`until`), код хэші
 - `admin.html` — жаңа орталық жолын жасау
 - `tools/build.py` — ойын беттерін neuroustaz-games және kobeytu-alemi репозиторийлерінен қайта жинау

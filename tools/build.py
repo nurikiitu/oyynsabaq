@@ -26,6 +26,9 @@ window.OS_filter=c=>{if(c.demo){const d=el('div','demo-note',`🎁 Демо-нұ
 """
 g=rep(g,"\n</script>\n</body>",FILTER_G+"</script>\n</body>",'games')
 g=rep(g,"</style>\n</head>",".demo-note{max-width:1100px;margin:6px auto 0;background:#fff;color:#1a2a5a;border-radius:18px;padding:10px 18px;font-weight:900;font-size:clamp(15px,1.6vw,20px);text-align:center;box-shadow:0 5px 0 rgba(0,0,0,.15)}.demo-note a{color:#43a047;white-space:nowrap}</style>\n</head>",'games')
+sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from extra import add_extra
+g=add_extra(g)
 assert 'neuroUstaz' not in g,'games: neuroUstaz қалды'
 open(os.path.join(root,'games.html'),'w',encoding='utf-8').write(g)
 k=open(src_kb,encoding='utf-8').read()

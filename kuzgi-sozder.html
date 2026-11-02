@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="kk" translate="no">
+<head>
+<meta name="google" content="notranslate">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Күзгі сөздер</title>
+<script src="brand.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+/* Layout: fixed 1500×760 stage scaled to fit (board / laptop / phone), thin top bar outside it.
+   Single deliberate look: neuroUstaz blue class-site sky + autumn scene, so no dark theme blocks. */
+:root{
+  --sky1:#29a3f5; --sky2:#1565c0;
+  --ink:#3a2a1a; --paper:#fffaf0; --white:#ffffff;
+  --grade:#ffa726;            /* 2-сынып түсі */
+  --ok:#43a047; --bad:#e53935;
+  --red:#e53935; --yellow:#f6b21b; --brown:#8d5524; --orange:#f57c00;
+  --font:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  color-scheme:light;
+}
+html,body{height:100%}
+[hidden]{display:none!important}
+body{margin:0;background:linear-gradient(180deg,var(--sky1),var(--sky2));color:var(--ink);font-family:var(--font);
+  user-select:none;-webkit-user-select:none;touch-action:manipulation;overflow:hidden;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));box-sizing:border-box}
+#app{height:100%;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:12px;padding-block:8px;flex:0 0 auto}
+.top h1{flex:1;margin:0;color:var(--white);font-weight:900;font-size:clamp(18px,2.6vw,30px);text-shadow:0 3px 0 rgba(0,0,0,.2);text-align:center;text-wrap:balance}
+.tbtn{font:900 22px var(--font);background:var(--white);color:var(--ink);border:0;border-radius:16px;min-width:52px;height:48px;padding:0 14px;
+  box-shadow:0 6px 0 rgba(0,0,0,.18);cursor:pointer}
+.tbtn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.18)}
+#main{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding-bottom:8px}
+#wrap{position:relative}
+#stage{position:absolute;left:0;top:0;width:1500px;height:760px;transform-origin:0 0}
+.screen{position:absolute;inset:0}
+button{font-family:var(--font)}
+button:focus-visible{outline:5px solid var(--grade);outline-offset:4px}
+
+/* ---------- 3D button ---------- */
+.b3{border:0;background:var(--white);color:var(--ink);border-radius:24px;font-weight:900;cursor:pointer;
+  box-shadow:0 8px 0 rgba(0,0,0,.18);transition:transform .08s}
+.b3:active{transform:translateY(6px);box-shadow:0 2px 0 rgba(0,0,0,.18)}
+
+/* ---------- HOME ---------- */
+#home{display:flex;flex-direction:column;align-items:center;padding-top:34px;box-sizing:border-box}
+.hTitle{font-size:96px;font-weight:900;color:var(--white);margin:0;line-height:1;text-shadow:0 6px 0 rgba(0,0,0,.18)}
+.hSub{font-size:30px;font-weight:800;color:#e3f2fd;margin:14px 0 22px}
+.chips{display:flex;gap:16px;margin-bottom:34px}
+.chip{background:var(--paper);border-radius:999px;padding:10px 26px;font-size:34px;font-weight:900;box-shadow:0 6px 0 rgba(0,0,0,.15)}
+.cards{display:flex;gap:44px}
+.gcard{width:600px;background:var(--white);border-radius:36px;padding:28px 32px 30px;box-sizing:border-box;box-shadow:0 10px 0 rgba(0,0,0,.18);
+  display:flex;flex-direction:column;gap:14px}
+.gcard .ico{font-size:72px;line-height:1}
+.gcard h2{margin:0;font-size:46px;font-weight:900}
+.gcard p{margin:0;font-size:25px;font-weight:700;color:#6b5844;line-height:1.25}
+.lvRow{display:flex;gap:16px;margin-top:8px}
+.lvRow .b3{flex:1;height:86px;font-size:30px;color:var(--white);text-shadow:0 2px 0 rgba(0,0,0,.25)}
+.lvE{background:#66bb6a!important}.lvH{background:#ef6c00!important}.lvT{background:#8d5524!important}
+.hfall{position:absolute;top:-80px;font-size:54px;pointer-events:none;animation:hfall linear infinite}
+@keyframes hfall{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(60px,440px) rotate(160deg)}100%{transform:translate(-20px,900px) rotate(320deg)}}
+
+/* ---------- GAME 1: КҮЗДІ САЛ ---------- */
+#scene{position:absolute;left:16px;top:16px;width:960px;height:728px;border-radius:34px;overflow:hidden;
+  box-shadow:0 10px 0 rgba(0,0,0,.2);background:#7cc6f5}
+#scene svg{position:absolute;inset:0;width:100%;height:100%}
+#gsky{opacity:0;transition:opacity 1.6s}
+.cloudy #gsky{opacity:.9}
+#sun{transition:transform 1.6s,opacity 1.6s;transform-box:fill-box;transform-origin:center}
+.cloudy #sun{transform:translateY(70px) scale(.8);opacity:.15}
+.cl{transition:transform 1.5s cubic-bezier(.2,.8,.3,1),opacity 1.2s;opacity:0}
+.cl.L{transform:translateX(-760px)}.cl.R{transform:translateX(760px)}
+.cloudy .cl{transform:none;opacity:1}
+.grassP{transition:fill 1.6s}
+.dry .grassP{fill:#c4a35a}
+.tuft{transition:transform 1.6s cubic-bezier(.2,.8,.3,1),fill 1.6s;transform-box:fill-box;transform-origin:50% 100%;fill:#3f9b3a}
+.dry .tuft{transform:rotate(22deg) scaleY(.62);fill:#a9823c}
+.flower{transition:transform 1.6s,opacity 1.6s;transform-box:fill-box;transform-origin:50% 100%}
+.dry .flower{transform:rotate(-35deg) scaleY(.7);opacity:.55}
+#rainC{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.wheat{position:absolute;font-size:64px;transform:scale(0) translateY(40px);transition:transform .7s cubic-bezier(.3,1.5,.5,1);pointer-events:none}
+.harvest .wheat{transform:scale(1) translateY(0)}
+.sticker{position:absolute;background:var(--paper);border-radius:22px;padding:10px 18px;box-shadow:0 6px 0 rgba(0,0,0,.2);max-width:330px;
+  transform:scale(0);transition:transform .45s cubic-bezier(.3,1.5,.5,1)}
+.sticker b{display:block;font-size:34px;font-weight:900;color:var(--orange);line-height:1.05}
+.sticker span{display:block;font-size:21px;font-weight:800;color:#6b5844;line-height:1.15}
+.sticker.on{transform:scale(1)}
+.sticker.glow{animation:glow 1s ease 2}
+@keyframes glow{50%{box-shadow:0 6px 0 rgba(0,0,0,.2),0 0 0 10px rgba(255,167,38,.7)}}
+#bigMsg{position:absolute;left:0;right:0;top:300px;text-align:center;font-size:110px;font-weight:900;color:var(--white);
+  text-shadow:0 7px 0 rgba(0,0,0,.25);transform:scale(0);pointer-events:none}
+#bigMsg.on{animation:big 2.2s cubic-bezier(.3,1.5,.5,1) forwards}
+@keyframes big{0%{transform:scale(0)}18%{transform:scale(1.15)}28%{transform:scale(1)}80%{transform:scale(1);opacity:1}100%{transform:scale(1);opacity:0}}
+
+#panel{position:absolute;left:996px;top:16px;width:488px;height:728px;display:flex;flex-direction:column;gap:16px}
+.dots{display:flex;gap:12px;justify-content:center;height:30px;align-items:center}
+.dots i{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.35);display:block}
+.dots i.cur{background:var(--white);transform:scale(1.25)}
+.dots i.done{background:var(--grade);box-shadow:0 0 0 4px var(--white)}
+.qcard{background:var(--paper);border-radius:30px;padding:20px 24px;box-shadow:0 8px 0 rgba(0,0,0,.18);min-height:200px;box-sizing:border-box;
+  display:flex;flex-direction:column;justify-content:center;gap:8px}
+.qlab{font-size:22px;font-weight:900;color:var(--orange);text-transform:uppercase;letter-spacing:.06em}
+.qtxt{font-size:40px;font-weight:900;line-height:1.12;text-wrap:balance}
+.qword{font-size:72px;font-weight:900;line-height:1;color:var(--orange)}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:20px 22px;flex:1;align-content:start;padding-top:6px}
+.leaf{position:relative;height:160px;border:0;cursor:pointer;color:var(--white);font-weight:900;font-size:40px;
+  border-radius:8px 90px 8px 90px;box-shadow:0 9px 0 rgba(0,0,0,.2);text-shadow:0 3px 0 rgba(0,0,0,.25);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:transform .08s,opacity .3s,filter .3s}
+.leaf::after{content:"";position:absolute;right:14px;bottom:12px;width:34px;height:4px;border-radius:4px;background:rgba(255,255,255,.35);transform:rotate(-35deg);z-index:0}
+.leaf>*{position:relative;z-index:1}
+.leaf .em{font-size:46px;line-height:1;text-shadow:none}
+.leaf:active{transform:translateY(6px);box-shadow:0 3px 0 rgba(0,0,0,.2)}
+.c0{background:var(--orange)}.c1{background:var(--red)}.c2{background:var(--yellow)}.c3{background:var(--brown)}
+.leaf.no{opacity:.35;filter:grayscale(.7);pointer-events:none}
+.leaf.yes{box-shadow:0 9px 0 rgba(0,0,0,.2),0 0 0 8px var(--white)}
+.leaf.hint{animation:hint .8s ease 3}
+@keyframes hint{50%{box-shadow:0 9px 0 rgba(0,0,0,.2),0 0 0 12px #fff59d}}
+.mopts{display:flex;flex-direction:column;gap:16px;flex:1}
+.mcard{border:0;background:var(--white);border-radius:24px;min-height:96px;padding:12px 20px;font-size:28px;font-weight:900;color:var(--ink);text-align:left;
+  box-shadow:0 7px 0 rgba(0,0,0,.18);cursor:pointer;display:flex;align-items:center;gap:14px;line-height:1.15}
+.mcard .mk{flex:0 0 46px;height:46px;border-radius:12px 30px 12px 30px;display:block}
+.mcard:active{transform:translateY(5px);box-shadow:0 2px 0 rgba(0,0,0,.18)}
+.mcard.no{opacity:.35;pointer-events:none}
+.mcard.yes{background:#e8f5e9;box-shadow:0 7px 0 rgba(0,0,0,.18),0 0 0 6px var(--ok)}
+.mcard.hint{animation:hint .8s ease 3}
+.pfoot{display:flex;gap:14px;justify-content:flex-end}
+.small{height:62px;font-size:26px;padding:0 26px}
+.next{width:100%;height:110px;font-size:36px;background:var(--grade)!important;color:var(--white);text-shadow:0 3px 0 rgba(0,0,0,.2)}
+
+/* ---------- GAME 2: ЖАПЫРАҚ ЖАРЫСЫ ---------- */
+#g2{background:linear-gradient(180deg,#ffcf7a 0%,#ffa94d 60%,#e97b2e 100%)}
+.teams{position:absolute;left:20px;right:20px;top:18px;display:flex;gap:30px}
+.team{flex:1;background:var(--white);border-radius:28px;padding:14px 18px 16px;box-shadow:0 8px 0 rgba(0,0,0,.16);position:relative;
+  transition:transform .3s cubic-bezier(.3,1.5,.5,1),box-shadow .3s;border:6px solid transparent}
+.team.cur{transform:translateY(6px) scale(1.04);border-color:var(--tc)}
+.team .tn{display:flex;align-items:center;gap:12px;font-size:32px;font-weight:900}
+.team .tn i{width:40px;height:40px;border-radius:8px 28px 8px 28px;background:var(--tc);display:block}
+.team .sc{margin-left:auto;font-size:44px;font-variant-numeric:tabular-nums;color:var(--td)}
+.team .slots{display:flex;gap:8px;margin-top:10px}
+.team .slots i{flex:1;height:34px;border-radius:6px 22px 6px 22px;border:3px dashed #d7c7b3;display:block;box-sizing:border-box}
+.team .slots i.f{background:var(--tc);border:3px solid var(--td)}
+.team .turn{position:absolute;top:-16px;right:20px;background:var(--tc);color:var(--white);font-size:20px;font-weight:900;border-radius:999px;padding:4px 14px;
+  text-shadow:0 2px 0 rgba(0,0,0,.2);opacity:0;transition:opacity .2s}
+.team.cur .turn{opacity:1}
+.sent{position:absolute;left:90px;right:90px;top:230px;height:220px;background:var(--paper);border-radius:34px;box-shadow:0 10px 0 rgba(0,0,0,.16);
+  display:flex;align-items:center;justify-content:center;padding:20px 50px;box-sizing:border-box;
+  background-image:repeating-linear-gradient(180deg,transparent 0 68px,rgba(141,85,36,.12) 68px 71px)}
+.sent p{margin:0;font-size:54px;font-weight:900;line-height:1.35;text-align:center;text-wrap:balance}
+.blank{display:inline-block;min-width:250px;padding:0 18px;border-bottom:6px dashed var(--orange);color:transparent;border-radius:10px;transition:background .2s}
+.blank.over{background:#fff3c4}
+.blank.okb{color:var(--ok);border-bottom:6px solid var(--ok);animation:pop .4s cubic-bezier(.3,1.5,.5,1)}
+.blank.rev{color:#8a7a68;border-bottom-color:#8a7a68}
+@keyframes pop{0%{transform:scale(.5)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+.counter{position:absolute;left:110px;top:244px;font-size:22px;font-weight:900;color:#9a7b58;font-variant-numeric:tabular-nums}
+.who{position:absolute;right:110px;top:240px;font-size:22px;font-weight:900;color:var(--white);background:var(--tc);border-radius:999px;padding:4px 16px}
+.field2{position:absolute;left:30px;right:230px;top:486px;height:250px;display:flex;justify-content:space-around;align-items:center}
+.sway{animation:sway 3.2s ease-in-out infinite;transform-origin:50% -60px}
+.sway:nth-child(2){animation-delay:-.8s}.sway:nth-child(3){animation-delay:-1.6s}.sway:nth-child(4){animation-delay:-2.4s}
+@keyframes sway{0%,100%{transform:rotate(-4deg) translateY(0)}50%{transform:rotate(4deg) translateY(10px)}}
+.field2 .leaf{width:270px;height:170px;font-size:46px;touch-action:none}
+.g2foot{position:absolute;right:30px;bottom:90px}
+.ghost{position:fixed;z-index:9999;pointer-events:none;opacity:.92}
+
+/* ---------- END overlay, toast ---------- */
+#end{position:absolute;inset:0;background:rgba(10,40,90,.55);display:flex;align-items:center;justify-content:center;z-index:50}
+.endc{background:var(--white);border-radius:40px;padding:36px 56px;min-width:720px;text-align:center;box-shadow:0 12px 0 rgba(0,0,0,.2);animation:pop .45s cubic-bezier(.3,1.5,.5,1)}
+.endc h2{margin:0;font-size:72px;font-weight:900}
+.stars{font-size:96px;letter-spacing:10px;margin:10px 0}
+.endc p{font-size:30px;font-weight:800;color:#6b5844;margin:8px 0 22px}
+.endBtns{display:flex;gap:20px;justify-content:center}
+.endBtns .b3{height:90px;padding:0 40px;font-size:32px}
+.pod{display:flex;align-items:flex-end;justify-content:center;gap:24px;margin:18px 0 10px}
+.pod div{width:200px;border-radius:24px 24px 10px 10px;color:var(--white);font-weight:900;font-size:30px;padding-top:14px;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+.pod div b{display:block;font-size:56px}
+#toast{position:absolute;left:50%;top:330px;transform:translateX(-50%) scale(0);background:var(--white);border-radius:999px;padding:14px 34px;
+  font-size:38px;font-weight:900;box-shadow:0 8px 0 rgba(0,0,0,.2);z-index:60;pointer-events:none;white-space:nowrap}
+#toast.on{animation:tst 1.2s cubic-bezier(.3,1.5,.5,1) forwards}
+@keyframes tst{0%{transform:translateX(-50%) scale(0)}20%{transform:translateX(-50%) scale(1.1)}30%,80%{transform:translateX(-50%) scale(1);opacity:1}100%{transform:translateX(-50%) scale(1);opacity:0}}
+.shake{animation:shake .4s}
+@keyframes shake{20%{transform:translateX(-14px)}40%{transform:translateX(12px)}60%{transform:translateX(-8px)}80%{transform:translateX(5px)}}
+@media (prefers-reduced-motion:reduce){.sway,.hfall{animation:none}.shake{animation:none;outline:6px solid var(--bad)}}
+</style>
+</head>
+<body>
+<div id="app" lang="kk" translate="no">
+  <div class="top">
+    <a class="tbtn" href="games.html" aria-label="Ойындар тізімі" style="display:flex;align-items:center;justify-content:center;text-decoration:none">⬅</a>
+    <button class="tbtn" id="homeBtn" aria-label="Басты бет">🏠</button>
+    <h1>Күзгі сөздер · М. Дулатұлы «Күз»</h1>
+    <button class="tbtn" id="fsBtn" aria-label="Толық экран">⛶</button>
+    <button class="tbtn" id="muteBtn" aria-label="Дыбыс">🔊</button>
+  </div>
+  <div id="main"><div id="wrap"><div id="stage">
+
+    <!-- HOME -->
+    <section class="screen" id="home">
+      <span class="hfall" style="left:6%;animation-duration:9s">🍂</span>
+      <span class="hfall" style="left:22%;animation-duration:12s;animation-delay:-4s">🍁</span>
+      <span class="hfall" style="left:78%;animation-duration:10s;animation-delay:-2s">🍂</span>
+      <span class="hfall" style="left:92%;animation-duration:13s;animation-delay:-7s">🍁</span>
+      <h2 class="hTitle">Күзгі сөздер</h2>
+      <div class="hSub">Сөздердің мағынасын біліп ал</div>
+      <div class="chips"><span class="chip">қаптап</span><span class="chip">сіркіреп</span><span class="chip">қурау</span><span class="chip">астық</span></div>
+      <div class="cards">
+        <div class="gcard">
+          <div class="ico">🎨</div>
+          <h2>1. Күзді сал</h2>
+          <p>Мағынасын оқы да, сөзін тап. Әр дұрыс жауапта сурет жанданады: бұлт қаптайды, жаңбыр сіркірейді, шөп қурайды, астық жиналады.</p>
+          <div class="lvRow">
+            <button class="b3 lvE" data-g1="0">▶ Бастау</button>
+          </div>
+        </div>
+        <div class="gcard">
+          <div class="ico">🍁</div>
+          <h2>2. Жапырақ жарысы</h2>
+          <p>Үш топ кезекпен ойнайды: қызыл, сары, қоңыр. Желмен тербелген жапырақтан керек сөзді тауып, сөйлемге қондыр.</p>
+          <div class="lvRow">
+            <button class="b3 lvT" id="g2Start">▶ Жарысты бастау</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GAME 1 -->
+    <section class="screen" id="g1" hidden>
+      <div id="scene">
+        <svg viewBox="0 0 960 728" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5fb8f2"/><stop offset="1" stop-color="#d6eefb"/></linearGradient>
+            <linearGradient id="greyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c8893"/><stop offset="1" stop-color="#c3cad0"/></linearGradient>
+          </defs>
+          <rect width="960" height="728" fill="url(#skyG)"/>
+          <rect id="gsky" width="960" height="728" fill="url(#greyG)"/>
+          <circle id="sun" cx="800" cy="130" r="62" fill="#ffd23f"/>
+          <g id="clouds"></g>
+          <path d="M0 400 Q220 300 470 380 T960 350 V728 H0Z" fill="#e9b44c"/>
+          <path d="M0 470 Q480 400 960 470 V728 H0Z" fill="#b07a42"/>
+          <path d="M0 470 Q480 400 960 470" stroke="#9a6936" stroke-width="6" fill="none" opacity=".5"/>
+          <g id="trees"></g>
+          <path class="grassP" d="M0 598 Q480 552 960 600 V728 H0Z" fill="#6fae4c"/>
+          <g id="tufts"></g>
+        </svg>
+        <canvas id="rainC" width="960" height="728"></canvas>
+        <div id="wheatL"></div>
+        <div class="sticker" id="st-қаптап" style="left:250px;top:150px"><b>қаптап</b><span>көп болып жиналуы</span></div>
+        <div class="sticker" id="st-сіркіреп" style="left:40px;top:290px"><b>сіркіреп</b><span>жаңбырдың ұсақ тамшы түрінде жауы</span></div>
+        <div class="sticker" id="st-қурау" style="left:560px;top:560px"><b>қурау</b><span>шөптің, өсімдіктің кебуі, солуы</span></div>
+        <div class="sticker" id="st-астық" style="left:520px;top:300px"><b>астық</b><span>егіннен жиналған өнім</span></div>
+        <div id="bigMsg">Күз келді! 🍂</div>
+      </div>
+      <div id="panel">
+        <div class="dots" id="dots1"></div>
+        <div class="qcard" id="q1"></div>
+        <div id="opts1"></div>
+        <div class="pfoot"><button class="b3 small" id="rev1">💡 Жауап</button></div>
+      </div>
+    </section>
+
+    <!-- GAME 2 -->
+    <section class="screen" id="g2" hidden>
+      <div class="teams" id="teams"></div>
+      <div class="sent"><p id="sentP"></p></div>
+      <div class="counter" id="cnt2"></div>
+      <div class="who" id="who2"></div>
+      <div class="field2" id="field2"></div>
+      <div class="g2foot"><button class="b3 small" id="rev2">💡 Жауап</button></div>
+    </section>
+
+    <div id="end" hidden></div>
+    <div id="toast"></div>
+  </div></div></div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e};
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+/* ================= SOUND (WebAudio, no files) ================= */
+const AU={ctx:null,muted:store.get('ks_mute')==='1',rainSrc:null,rainGain:null,
+  get(){if(!this.ctx)this.ctx=new (window.AudioContext||window.webkitAudioContext)();if(this.ctx.state==='suspended')this.ctx.resume();return this.ctx},
+  vary(){return 1+(Math.random()-.5)*.12},
+  tone(o){const c=this.get(),t=o.t??c.currentTime,g=c.createGain(),s=c.createOscillator();s.type=o.type||'sine';
+    s.frequency.setValueAtTime(o.f0,t);if(o.f1&&o.f1!==o.f0)s.frequency.exponentialRampToValueAtTime(o.f1,t+o.dur);
+    g.gain.setValueAtTime(.001,t);g.gain.exponentialRampToValueAtTime(o.vol,t+(o.att||.008));g.gain.exponentialRampToValueAtTime(.001,t+o.dur);
+    s.connect(g).connect(c.destination);s.start(t);s.stop(t+o.dur+.02)},
+  noise(dur){const c=this.get(),b=c.createBuffer(1,Math.ceil(c.sampleRate*dur),c.sampleRate),d=b.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;const s=c.createBufferSource();s.buffer=b;return s},
+  play(k){if(this.muted)return;try{const c=this.get(),t=c.currentTime,v=this.vary();
+    if(k==='tap'){const n=this.noise(.06),f=c.createBiquadFilter(),g=c.createGain();f.type='bandpass';f.frequency.value=1300*v;f.Q.value=1;
+      g.gain.setValueAtTime(.18,t);g.gain.exponentialRampToValueAtTime(.001,t+.06);n.connect(f).connect(g).connect(c.destination);n.start(t);n.stop(t+.07)}
+    else if(k==='good'){this.tone({f0:523*v,dur:.14,vol:.3,t});this.tone({f0:659*v,dur:.22,vol:.3,t:t+.1})}
+    else if(k==='bad'){this.tone({type:'triangle',f0:350,f1:250,dur:.22,vol:.15,t})}
+    else if(k==='pop'){this.tone({f0:1200*v,f1:320,dur:.07,vol:.22,t})}
+    else if(k==='win'){[523,659,784,1047].forEach((f,i)=>{this.tone({f0:f,dur:i===3?.5:.16,vol:.26,t:t+i*.09});this.tone({f0:f*1.004,dur:i===3?.5:.16,vol:.08,t:t+i*.09})})}
+    else if(k==='whoosh'){const n=this.noise(.6),f=c.createBiquadFilter(),g=c.createGain();f.type='bandpass';f.Q.value=1;
+      f.frequency.setValueAtTime(400,t);f.frequency.exponentialRampToValueAtTime(2600,t+.55);
+      g.gain.setValueAtTime(.001,t);g.gain.exponentialRampToValueAtTime(.16,t+.25);g.gain.exponentialRampToValueAtTime(.001,t+.6);
+      n.connect(f).connect(g).connect(c.destination);n.start(t);n.stop(t+.62)}
+    else if(k==='grow'){[392,494,587].forEach((f,i)=>this.tone({f0:f,f1:f*1.5,dur:.18,vol:.16,t:t+i*.12}))}
+    else if(k==='wilt'){this.tone({type:'triangle',f0:520,f1:260,dur:.7,vol:.12,t})}
+  }catch(e){}},
+  rain(on){try{
+    if(on&&!this.muted&&!this.rainSrc){const c=this.get(),n=this.noise(2),f=c.createBiquadFilter(),g=c.createGain();n.loop=true;f.type='bandpass';f.frequency.value=2400;f.Q.value=.6;
+      g.gain.setValueAtTime(.001,c.currentTime);g.gain.exponentialRampToValueAtTime(.05,c.currentTime+1.2);n.connect(f).connect(g).connect(c.destination);n.start();this.rainSrc=n;this.rainGain=g}
+    if(!on&&this.rainSrc){const c=this.get();this.rainGain.gain.setValueAtTime(this.rainGain.gain.value,c.currentTime);this.rainGain.gain.exponentialRampToValueAtTime(.001,c.currentTime+.5);
+      const s=this.rainSrc;setTimeout(()=>{try{s.stop()}catch(e){}},600);this.rainSrc=null}
+  }catch(e){}}
+};
+
+/* ================= FX ================= */
+function burst(target,n=10,E=['⭐','✨','🍂','🍁']){if(RM)n=4;const r=target.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,S=scale()||1;
+  for(let i=0;i<n;i++){const p=el('div',null,E[i%E.length]);p.style.cssText=`position:fixed;left:${cx-16}px;top:${cy-16}px;font-size:${Math.max(18,34*S)}px;pointer-events:none;z-index:9999`;document.body.append(p);
+    const a=Math.PI*2*i/n+Math.random()*.4,d=(90+Math.random()*90)*S;
+    p.animate([{transform:'translate(0,0) scale(.4)',opacity:1},{transform:`translate(${Math.cos(a)*d}px,${Math.sin(a)*d}px) scale(1.1) rotate(${(Math.random()-.5)*200}deg)`,opacity:0}],
+      {duration:800,easing:'cubic-bezier(.2,.8,.3,1)'}).onfinish=()=>p.remove()}}
+function fly(a,b,dur=600){const ra=a.getBoundingClientRect(),rb=b.getBoundingClientRect(),g=a.cloneNode(true);
+  g.style.cssText+=`;position:fixed;left:${ra.left}px;top:${ra.top}px;width:${ra.width}px;height:${ra.height}px;margin:0;z-index:9998;pointer-events:none;font-size:${parseFloat(getComputedStyle(a).fontSize)*scale()}px`;
+  document.body.append(g);const dx=rb.left+rb.width/2-(ra.left+ra.width/2),dy=rb.top+rb.height/2-(ra.top+ra.height/2);
+  return g.animate([{transform:'none'},{transform:`translate(${dx/2}px,${dy/2-120*scale()}px) scale(.9) rotate(10deg)`},{transform:`translate(${dx}px,${dy}px) scale(.45)`,opacity:.2}],
+    {duration:RM?1:dur,easing:'cubic-bezier(.45,0,.3,1)'}).finished.then(()=>g.remove())}
+function leafRain(n=28){if(RM)n=8;const E=['🍂','🍁','🍃','🍂'];for(let i=0;i<n;i++){const p=el('div',null,E[i%4]);
+  p.style.cssText=`position:fixed;left:${Math.random()*innerWidth}px;top:-60px;font-size:${28+Math.random()*30}px;pointer-events:none;z-index:9997`;document.body.append(p);
+  const dx=(Math.random()-.5)*240;p.animate([{transform:'translate(0,0) rotate(0)'},{transform:`translate(${dx}px,${innerHeight*.5}px) rotate(${180+Math.random()*180}deg)`},{transform:`translate(${-dx/2}px,${innerHeight+120}px) rotate(${360+Math.random()*200}deg)`}],
+    {duration:2600+Math.random()*1800,delay:Math.random()*900,easing:'ease-in'}).onfinish=()=>p.remove()}}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.remove('on');void e.offsetWidth;e.classList.add('on')}
+function shake(e){e.classList.remove('shake');void e.offsetWidth;e.classList.add('shake')}
+
+/* ================= STAGE FIT ================= */
+let SC=1;const scale=()=>SC;
+function fit(){const m=$('#main').getBoundingClientRect();SC=Math.min(m.width/1500,m.height/760);
+  $('#stage').style.transform=`scale(${SC})`;$('#wrap').style.width=1500*SC+'px';$('#wrap').style.height=760*SC+'px'}
+addEventListener('resize',fit);
+
+/* ================= SCREENS ================= */
+let token=0;
+function show(id){token++;['home','g1','g2'].forEach(s=>$('#'+s).hidden=s!==id);$('#end').hidden=true;AU.rain(false);rainOn=false;
+  const f=$('#'+id).querySelector('button');if(f&&id==='home')f.focus({preventScroll:true})}
+$('#homeBtn').onclick=()=>{AU.play('tap');show('home')};
+$('#muteBtn').textContent=AU.muted?'🔇':'🔊';
+$('#muteBtn').onclick=()=>{AU.muted=!AU.muted;store.set('ks_mute',AU.muted?'1':'0');$('#muteBtn').textContent=AU.muted?'🔇':'🔊';
+  if(AU.muted)AU.rain(false);else{AU.play('tap');if(rainOn)AU.rain(true)}};
+$('#fsBtn').onclick=()=>{try{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}};
+addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#home').hidden)show('home')});
+function endScreen(html,buttons){const e=$('#end');e.innerHTML='';const c=el('div','endc',html);const row=el('div','endBtns');
+  buttons.forEach(([t,fn,bg])=>{const b=el('button','b3',t);if(bg){b.style.background=bg;b.style.color='#fff'}b.onclick=()=>{AU.play('tap');fn()};row.append(b)});
+  c.append(row);e.append(c);e.hidden=false;row.querySelector('button').focus({preventScroll:true})}
+
+/* ================= DATA ================= */
+const W=[
+ {w:'қаптап',m:'көп болып жиналуы',e:'☁️'},
+ {w:'сіркіреп',m:'жаңбырдың ұсақ тамшы түрінде жауы',e:'🌦️'},
+ {w:'қурау',m:'шөптің, өсімдіктің кебуі, солуы',e:'🥀'},
+ {w:'астық',m:'егіннен жиналған өнім',e:'🌾'}];
+const LC=['c0','c1','c2','c3'];
+
+/* ================= GAME 1 SCENE ================= */
+(function buildScene(){
+  const NS='http://www.w3.org/2000/svg',mk=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e};
+  const cl=$('#clouds');[[90,90,1.2,'L',0],[330,60,1.5,'L',.15],[560,110,1.3,'R',.05],[760,70,1.6,'R',.2],[230,190,1,'L',.3],[640,200,1.1,'R',.35]].forEach(([x,y,s,side,d],i)=>{
+    const g=mk('g',{class:'cl '+side});g.style.transitionDelay=d+'s';const inner=mk('g',{transform:`translate(${x} ${y}) scale(${s})`});
+    const fill=i%2?'#d9dfe4':'#eef1f3';[[0,30,70,38],[60,10,62,48],[120,30,64,36],[60,40,110,34]].forEach(([cx,cy,rx,ry])=>inner.append(mk('ellipse',{cx,cy,rx,ry,fill})));
+    g.append(inner);cl.append(g)});
+  const tr=$('#trees');[[150,430,'#f39c3d','#e2622b'],[860,420,'#f5c242','#ec9a2a'],[700,455,'#e2622b','#c0392b']].forEach(([x,y,a,b],i)=>{
+    const s=i===2?.7:1;const g=mk('g',{transform:`translate(${x} ${y}) scale(${s})`});
+    g.append(mk('rect',{x:-12,y:-10,width:24,height:110,rx:8,fill:'#7a4a24'}));
+    [[0,-70,70,a],[-45,-40,48,b],[45,-40,50,a],[0,-20,52,b],[-20,-105,40,b]].forEach(([cx,cy,r,f])=>g.append(mk('circle',{cx,cy,r,fill:f})));tr.append(g)});
+  const tf=$('#tufts');for(let i=0;i<30;i++){const x=10+i*32+Math.random()*12,y=640+Math.random()*70,h=34+Math.random()*22;
+    const p=mk('path',{class:'tuft',d:`M${x} ${y} Q${x-12} ${y-h*.6} ${x-16} ${y-h} Q${x-4} ${y-h*.5} ${x} ${y} Q${x+2} ${y-h*.8} ${x+4} ${y-h*1.1} Q${x+8} ${y-h*.6} ${x+6} ${y} Q${x+14} ${y-h*.6} ${x+20} ${y-h*.9} Q${x+12} ${y-h*.4} ${x+10} ${y}Z`});
+    p.style.transitionDelay=(i%7)*.08+'s';tf.append(p);
+    if(i%5===2){const f=mk('g',{class:'flower'});f.style.transitionDelay=(i%7)*.08+'s';f.append(mk('rect',{x:x+24,y:y-44,width:4,height:44,fill:'#3f9b3a'}));f.append(mk('circle',{cx:x+26,cy:y-48,r:11,fill:'#ff7043'}));f.append(mk('circle',{cx:x+26,cy:y-48,r:4,fill:'#ffd23f'}));tf.append(f)}}
+  const wl=$('#wheatL');for(let i=0;i<16;i++){const w=el('div','wheat','🌾');const col=i%8,row=i/8|0;
+    w.style.left=(330+col*72+row*30)+'px';w.style.top=(410+row*62)+'px';w.style.transitionDelay=(i*.06)+'s';wl.append(w)}
+})();
+
+/* drizzle canvas */
+let rainOn=false,drops=[];
+const rc=$('#rainC'),rx=rc.getContext('2d');
+function rainLoop(){if(!rainOn){rx.clearRect(0,0,960,728);return}rx.clearRect(0,0,960,728);rx.strokeStyle='rgba(225,240,255,.85)';rx.lineWidth=2.4;rx.lineCap='round';rx.beginPath();
+  for(const d of drops){d.y+=d.v;d.x-=d.v*.22;if(d.y>728){d.y=-20;d.x=Math.random()*1100}rx.moveTo(d.x,d.y);rx.lineTo(d.x+3,d.y-d.l)}rx.stroke();requestAnimationFrame(rainLoop)}
+function startRain(){drops=Array.from({length:RM?40:150},()=>({x:Math.random()*1100,y:Math.random()*728,v:7+Math.random()*5,l:10+Math.random()*10}));if(!rainOn){rainOn=true;rainLoop()}AU.rain(true)}
+
+const sceneFx={
+  'қаптап':()=>{$('#scene').classList.add('cloudy');AU.play('whoosh')},
+  'сіркіреп':()=>{startRain()},
+  'қурау':()=>{$('#scene').classList.add('dry');AU.play('wilt')},
+  'астық':()=>{$('#scene').classList.add('harvest');AU.play('grow')}
+};
+
+/* ================= GAME 1 LOGIC ================= */
+const G1={easy:true,phase:1,order:[],i:0,miss:0,lock:false};
+function startG1(easy){show('g1');G1.easy=easy;G1.phase=1;G1.order=shuffle(W);G1.i=0;G1.miss=0;
+  const sc=$('#scene');sc.className='';rainOn=false;rx.clearRect(0,0,960,728);
+  document.querySelectorAll('.sticker').forEach(s=>s.classList.remove('on','glow'));$('#bigMsg').classList.remove('on');renderG1()}
+function dots(box,n,i){box.innerHTML='';for(let k=0;k<n;k++)box.append(el('i',k<i?'done':k===i?'cur':''))}
+function renderG1(){const T=token,cur=G1.order[G1.i];G1.lock=false;dots($('#dots1'),4,G1.i);const q=$('#q1'),o=$('#opts1');
+  if(G1.phase===1){q.innerHTML=`<div class="qlab">Мағынасы</div><div class="qtxt">${cur.m}</div><div style="font-size:24px;font-weight:800;color:#8a7258">Бұл қай сөз? Жапырақты бас 👇</div>`;
+    o.className='opts';o.innerHTML='';
+    W.forEach((w,k)=>{const b=el('button','leaf '+LC[k],`${G1.easy?`<span class="em">${w.e}</span>`:''}<span>${w.w}</span>`);b.dataset.k=w.w;b.onclick=()=>pickG1(w,b,T);o.append(b)});
+  }else{q.innerHTML=`<div class="qlab">2-кезең · Керісінше</div><div class="qword">${G1.easy?cur.e+' ':''}${cur.w}</div><div style="font-size:24px;font-weight:800;color:#8a7258">Мағынасын тап 👇</div>`;
+    o.className='mopts';o.innerHTML='';
+    shuffle(W).forEach(w=>{const k=W.indexOf(w);const b=el('button','mcard',`<i class="mk ${LC[k]}"></i><span>${w.m}</span>`);b.dataset.k=w.w;b.onclick=()=>pickG1(w,b,T);o.append(b)})}
+}
+function pickG1(w,b,T){if(G1.lock||T!==token)return;const cur=G1.order[G1.i];
+  if(w===cur){G1.lock=true;b.classList.add('yes');AU.play('good');burst(b,10);
+    const st=$('#st-'+cur.w);
+    if(G1.phase===1){fly(b,st,650).then(()=>{if(T!==token)return;sceneFx[cur.w]();st.classList.add('on');AU.play('pop')})}
+    else{st.classList.add('glow');setTimeout(()=>st.classList.remove('glow'),2100)}
+    setTimeout(()=>{if(T!==token)return;nextG1(T)},G1.phase===1?2100:1400);
+  }else{G1.miss++;AU.play('bad');shake(b);b.classList.add('no');toast('Тағы байқап көр 🙂')}}
+function nextG1(T){G1.i++;if(G1.i<4){renderG1();return}
+  dots($('#dots1'),4,4);AU.play('win');$('#bigMsg').classList.add('on');leafRain(36);
+  $('#q1').innerHTML=`<div class="qlab">Керемет!</div><div class="qtxt">Сен 4 сөз арқылы күзді салдың! 🍂</div>`;$('#opts1').innerHTML='';
+  setTimeout(()=>{if(T!==token)return;const stars=G1.miss<=1?3:G1.miss<=3?2:1;
+  endScreen(`<h2>Жарайсың! 🍂</h2><div class="stars">${'⭐'.repeat(stars)}${'☆'.repeat(3-stars)}</div><p>Қаптап · сіркіреп · қурау · астық: төрт сөздің мағынасын білесің. Қате: ${G1.miss}</p>`,
+    [['🔁 Қайта',()=>startG1(G1.easy),'#66bb6a'],['🍁 Жапырақ жарысы',startG2,'#8d5524'],['🏠 Басты бет',()=>show('home')]])},2600)}
+$('#rev1').onclick=()=>{if(G1.lock)return;const cur=G1.order[G1.i];if(!cur)return;G1.miss++;AU.play('tap');
+  const b=[...$('#opts1').children].find(x=>x.dataset.k===cur.w);if(b){b.classList.remove('hint');void b.offsetWidth;b.classList.add('hint')}};
+document.querySelectorAll('[data-g1]').forEach(b=>b.onclick=()=>{AU.play('tap');startG1(b.dataset.g1==='1')});
+
+/* ================= GAME 2 ================= */
+const TEAMS=[{n:'Қызыл топ',c:'#e53935',d:'#b71c1c'},{n:'Сары топ',c:'#f6b21b',d:'#b98100'},{n:'Қоңыр топ',c:'#8d5524',d:'#5d3816'}];
+const BANK=[
+ ['Аспанда бұлт ___, сіркіреп жаңбыр жауып тұр.','қаптап'],
+ ['Аспанда бұлт қаптап, ___ жаңбыр жауып тұр.','сіркіреп'],
+ ['Жапырақтар сарғайып түсіп, шөптер ___ қалған.','қурап'],
+ ['Егіншілер ___ жинап алды.','астығын'],
+ ['Көкте қара бұлт ___, күн көрінбей қалды.','қаптап'],
+ ['Таңертеңнен бері ___ жаңбыр жауып тұр.','сіркіреп'],
+ ['Күз келгенде гүлдер ___ қалады.','қурап'],
+ ['Диірменде ___ ұнға айналады.','астық'],
+ ['Аспанды сұр бұлт ___ алды.','қаптап'],
+ ['Күзде жаңбыр жиі ___ жауады.','сіркіреп'],
+ ['Суарылмаған гүл ___ қалды.','қурап'],
+ ['Кең далада ___ піседі.','астық']];
+const FORMS=['қаптап','сіркіреп','қурап','астық'];
+const G2={tasks:[],k:0,score:[0,0,0],tries:0,lock:false};
+function startG2(){show('g2');G2.tasks=shuffle(BANK);G2.k=0;G2.score=[0,0,0];
+  const tb=$('#teams');tb.innerHTML='';TEAMS.forEach((t,i)=>{const c=el('div','team',`<div class="turn">Кезек сенде!</div><div class="tn"><i></i>${t.n}<span class="sc">0</span></div><div class="slots">${'<i></i>'.repeat(8)}</div>`);
+    c.style.setProperty('--tc',t.c);c.style.setProperty('--td',t.d);tb.append(c)});renderG2()}
+function renderG2(){const T=token,task=G2.tasks[G2.k],ti=G2.k%3,team=TEAMS[ti];G2.tries=0;G2.lock=false;
+  [...$('#teams').children].forEach((c,i)=>c.classList.toggle('cur',i===ti));
+  $('#cnt2').textContent=`${G2.k+1} / ${G2.tasks.length}`;const who=$('#who2');who.textContent='🍁 '+team.n;who.style.setProperty('--tc',team.c);
+  const [s,ans]=task;$('#sentP').innerHTML=s.replace('___',`<span class="blank" id="blank">${ans}</span>`);
+  const opts=FORMS.map(f=>f==='астық'&&ans==='астығын'?'астығын':f);
+  const fld=$('#field2');fld.innerHTML='';shuffle(opts).forEach((w,i)=>{const sw=el('div','sway');const b=el('button','leaf '+LC[FORMS.indexOf(w==='астығын'?'астық':w)],`<span>${w}</span>`);
+    b.dataset.w=w;sw.append(b);fld.append(sw);bindLeaf(b,w,T)})}
+function overBlank(x,y){const r=$('#blank').getBoundingClientRect(),p=20*SC;return x>r.left-p&&x<r.right+p&&y>r.top-p&&y<r.bottom+p}
+function bindLeaf(b,w,T){let sx,sy,drag=false,ghost=null,id=null;
+  b.addEventListener('pointerdown',e=>{if(G2.lock||b.classList.contains('no'))return;id=e.pointerId;sx=e.clientX;sy=e.clientY;drag=false;b.setPointerCapture(id)});
+  b.addEventListener('pointermove',e=>{if(id!==e.pointerId)return;
+    if(!drag&&Math.hypot(e.clientX-sx,e.clientY-sy)>12){drag=true;const r=b.getBoundingClientRect();ghost=b.cloneNode(true);ghost.classList.add('ghost');
+      ghost.style.cssText+=`;width:${r.width}px;height:${r.height}px;font-size:${46*SC}px;left:${r.left}px;top:${r.top}px`;ghost._dx=sx-r.left;ghost._dy=sy-r.top;document.body.append(ghost);b.style.opacity='.3'}
+    if(drag){ghost.style.left=e.clientX-ghost._dx+'px';ghost.style.top=e.clientY-ghost._dy+'px';$('#blank').classList.toggle('over',overBlank(e.clientX,e.clientY))}});
+  const up=e=>{if(id!==e.pointerId)return;id=null;$('#blank')?.classList.remove('over');
+    if(drag){const hit=overBlank(e.clientX,e.clientY);ghost.remove();ghost=null;b.style.opacity='';if(hit)check(w,b,T,true)}
+    else if(e.type==='pointerup')check(w,b,T,false)};
+  b.addEventListener('pointerup',up);b.addEventListener('pointercancel',up);
+  b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();check(w,b,T,false)}})}
+function check(w,b,T,dropped){if(G2.lock||T!==token)return;const ans=G2.tasks[G2.k][1],ti=G2.k%3,bl=$('#blank');
+  if(w===ans){G2.lock=true;AU.play('good');const pts=G2.tries===0?2:1;
+    const done=()=>{if(T!==token)return;bl.classList.add('okb');burst(bl,12);addPoints(ti,pts);toast(`+${pts} 🍁 ${TEAMS[ti].n}`)};
+    if(dropped)done();else fly(b,bl,550).then(done);b.closest('.sway').style.visibility='hidden';
+    setTimeout(()=>{if(T!==token)return;nextG2()},1800);
+  }else{G2.tries++;AU.play('bad');shake(b.closest('.sway'));b.classList.add('no');toast('Тағы байқап көр 🙂')}}
+function addPoints(ti,p){const card=$('#teams').children[ti],slots=card.querySelectorAll('.slots i');
+  for(let j=0;j<p;j++){const s=slots[G2.score[ti]+j];if(s){setTimeout(()=>{s.classList.add('f');s.animate([{transform:'scale(.3)'},{transform:'scale(1.3)'},{transform:'scale(1)'}],{duration:350,easing:'cubic-bezier(.3,1.5,.5,1)'});AU.play('pop')},250+j*220)}}
+  G2.score[ti]+=p;card.querySelector('.sc').textContent=G2.score[ti]}
+function nextG2(){G2.k++;if(G2.k<G2.tasks.length){renderG2();return}
+  AU.play('win');leafRain(40);const order=[0,1,2].sort((a,b)=>G2.score[b]-G2.score[a]),top=G2.score[order[0]];
+  const winners=order.filter(i=>G2.score[i]===top).map(i=>TEAMS[i].n);
+  const h=[220,170,130];const pod=[order[1],order[0],order[2]].map(i=>{const rank=order.indexOf(i);
+    return `<div style="background:${TEAMS[i].c};height:${h[rank]}px"><b>${G2.score[i]}</b>${TEAMS[i].n}</div>`}).join('');
+  endScreen(`<h2>${winners.length>1?'Тең түсті! 🤝':'🏆 '+winners[0]}</h2><div class="pod">${pod}</div><p>Барлық топ жарайсыңдар! Қаптап, сіркіреп, қурау, астық сөздерін сөйлемде қолдандыңдар.</p>`,
+    [['🔁 Қайта жарыс',startG2,'#8d5524'],['🏠 Басты бет',()=>show('home')]])}
+$('#rev2').onclick=()=>{if(G2.lock)return;G2.lock=true;const T=token,bl=$('#blank');AU.play('tap');bl.classList.add('okb','rev');toast('Жауап: '+G2.tasks[G2.k][1]);
+  setTimeout(()=>{if(T!==token)return;nextG2()},2000)};
+$('#g2Start').onclick=()=>{AU.play('tap');startG2()};
+
+/* ================= BOOT ================= */
+fit();show('home');
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit);
+</script>
+
+</body>
+</html>
